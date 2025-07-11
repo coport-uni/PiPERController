@@ -5,6 +5,7 @@ from piper_sdk import *
 import time
 import os
 import csv
+from waiting import *
 
 class PiperController():
     def __init__(self):
@@ -14,19 +15,26 @@ class PiperController():
         Input : None
         Output : dict
         '''
-
+        self.time_delay = 0.005
+        self.motion_factor = 1000
         # os.system("bash find_all_can_port.sh")
         # os.system("bash can_activate.sh piper_left 1000000 "3-1:1.0"")
+
+        # Initialize connection
         self.piper_left = C_PiperInterface_V2("piper_left")
         self.piper_left.ConnectPort()
         self.piper_left.ArmParamEnquiryAndConfig(0x01,0x02,0,0,0x02)
 
+        os.system("python piper_ctrl_reset.py")
+        
+        # Reset PiPER
+        self.piper_left.MotionCtrl_1(0x02,0,0)
+        self.piper_left.MotionCtrl_2(0, 0, 0, 0x00)
+
+        # Enable PiPER
         while not self.piper_left.EnablePiper():
             time.sleep(0.01)
-
-        self.time_delay = 1
-        self.motion_factor = 1000
-    
+        
     def get_position_gripper(self):
         '''
         This function captures live mouse position.
@@ -55,7 +63,6 @@ class PiperController():
         Output : dict
         '''
         message = str(self.piper_left.GetArmJointMsgs())
-        time.sleep(self.time_delay)
 
         joint_index = [0, 0, 0, 0, 0, 0, 0]
         joint_state = [0, 0, 0, 0, 0, 0, 0]
@@ -64,13 +71,13 @@ class PiperController():
             joint_index[index_number] = message.find(f"Joint {index_number + 1}:")
 
         for joint_number in range(6):
-            joint_state[joint_number] = int(int(message[joint_index[joint_number] + 8:joint_index[joint_number + 1] - 1]) / self.motion_factor)
+            joint_state[joint_number] = round(int(message[joint_index[joint_number] + 8:joint_index[joint_number + 1] - 1]) / self.motion_factor)
 
         joint_state[6] = self.get_position_gripper()
 
         return joint_state
 
-    def get_position_eef(self):
+    def get_position_eef(self): 
         '''
         This function captures live mouse position.
 
@@ -87,7 +94,7 @@ class PiperController():
             eef_index[index_number] = message.find(eef_index_string[index_number])
         
         for eef_number in range(6):
-            eef_state[eef_number] = int(int(message[eef_index[eef_number] + 9:eef_index[eef_number + 1] - 1]) / self.motion_factor)
+            eef_state[eef_number] = round(int(message[eef_index[eef_number] + 9:eef_index[eef_number + 1] - 1]) / self.motion_factor)
 
         eef_state[6] = self.get_position_gripper()
 
@@ -106,11 +113,46 @@ class PiperController():
         
         elif value_min > value_input:
 
-            return value_min * self.motion_factor
+            return value_input * self.motion_factor
         
         elif value_input > value_max:
 
-            return value_max * self.motion_factor
+            return value_input * self.motion_factor
+    
+    def get_arm_status(self):
+        '''
+        This function captures live mouse position.
+
+        Input : None
+        Output : dict
+        '''
+        message = str(self.piper_left.GetArmStatus())
+
+        armstatus_index_string = ["Motion Status: ", "Trajectory Num: "]
+        armstatus_success_string = "REACH_TARGET_POS_SUCCESSFULLY(0x0)"
+
+        armstatus_index_number = [0,0]
+
+        for index_number in range(2):
+            armstatus_index_number[index_number] = message.find(armstatus_index_string[index_number])
+
+        armstatus_state = message[armstatus_index_number[0] + 15:armstatus_index_number[1] - 1]
+
+        if armstatus_state == armstatus_success_string:
+
+            time.sleep(self.time_delay)
+            return True
+
+        else: 
+            
+            return False
+
+    def get_record_csv(self, filepath : str, value_input : list):
+        with open(filepath, mode = 'a', newline = '') as csvfile:
+            value_writer = csv.writer(csvfile, lineterminator = '\n')
+            value_writer.writerow([value_input])
+            csvfile.close()
+        time.sleep(self.time_delay * 10)
 
     def run_position_gripper(self, gripper_mm : int):
         '''
@@ -123,7 +165,6 @@ class PiperController():
         self.piper_left.GripperCtrl(0,1000,0x02, 0)
         # print(gripper_mm)
         self.piper_left.GripperCtrl(gripper_mm, 1000, 0x01, 0)
-        time.sleep(0.005)
 
         return True
     
@@ -146,6 +187,8 @@ class PiperController():
         self.piper_left.JointCtrl(joint_value_input[0], joint_value_input[1], joint_value_input[2], joint_value_input[3], joint_value_input[4], joint_value_input[5])
         self.run_position_gripper(joint_value_input[6])
 
+        wait(lambda: self.get_arm_status(), timeout_seconds = 2, waiting_for="Finish of movement")
+
         return True
     
     def run_position_eef(self, eef_value_input : list):
@@ -166,14 +209,28 @@ class PiperController():
         self.piper_left.EndPoseCtrl(eef_value_input[0], eef_value_input[1], eef_value_input[2], eef_value_input[3], eef_value_input[4], eef_value_input[5])
         self.run_position_gripper(eef_value_input[6])
         
-        return True
+        wait(lambda: self.get_arm_status(), timeout_seconds = 2, waiting_for="Finish of movement")
         
-    def get_record_csv(self, value_input):
-        with open('test.csv', mode = 'a', newline = '') as csvfile:
-            spamwriter = csv.writer(csvfile, lineterminator = '\n')
-            spamwriter.writerow([value_input])
-            csvfile.close()
+        return True
 
+    def run_record_csv(self, filepath : str):
+
+        restored_value = [0, 0, 0, 0, 0, 0, 0]
+        row_count = 0
+
+        with open(filepath, 'r', newline='', encoding='utf-8') as csvfile:
+            value_reader = csv.reader(csvfile, lineterminator = '\n')
+            for row_data in value_reader:
+                processed_data = str(row_data).replace("'", "").replace("[", "").replace("]", "").split(",")
+                # print(processed_data)
+                for index_number in range(6):
+                    restored_value[index_number] = int(processed_data[index_number])
+                
+                # print(restored_value)
+                self.run_position_joint(restored_value)
+                row_count = row_count + 1
+                print(row_count)
+                
 def main():
     '''
     This function captures live mouse position.
@@ -182,23 +239,24 @@ def main():
     Output : dict
     '''
     pc = PiperController()
-    delay_time = 2
 
     pc.run_position_joint([0, 0, 0, 0, 0, 0, 0])
-    time.sleep(delay_time)
+    pc.run_record_csv("action_csv/test_demo.csv")
+    # while True:
+    #     data = pc.get_position_joint()
+    #     pc.get_record_csv("action_csv/test_demo.csv", data)
+    #     print(data)
 
     # while True:
-    #     pc.run_position_eef([0, 0, 30, 0, 0, 0, 67])
-    #     time.sleep(delay_time)
-    #     pc.run_position_eef([0, 0, -30, 0, 0, 0, 0])
-    #     time.sleep(delay_time)
+    #     pc.run_position_joint([-1 + 30, 1, 2, -3, 6, 0, 67])
+    #     pc.get_record_csv("test.csv", pc.get_position_joint())
+    #     pc.run_position_joint([-1 - 30, 1, 2, -3, 6, 0, 0])
+    #     pc.get_record_csv("test.csv", pc.get_position_joint())
 
-    while True:
-        pc.run_position_joint([-1 + 30, 1, 2, -3, 6, 0, 67])
-        time.sleep(delay_time)
-        pc.run_position_joint([-1 - 30, 1, 2, -3, 6, 0, 0])
-        time.sleep(delay_time)
-
+    # while True:
+    #     pc.run_position_eef([0, 0, 60, 0, 0, 0, 67])
+    #     pc.run_position_eef([0, 0, -60, 0, 0, 0, 0])
+    
     # while True:
     #     print(pc.get_position_eef())
 
