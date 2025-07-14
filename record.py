@@ -6,7 +6,6 @@ import time
 import os
 import csv
 from waiting import *
-from tqdm import tqdm
 
 class PiperController():
     def __init__(self):
@@ -259,22 +258,20 @@ def main():
     Output : dict
     '''
     pc = PiperController()
-    csv_filepath_down = "action_csv/test_demo_down.csv"
-    csv_filepath_up = "action_csv/test_demo_up.csv"
+    # csv_filepath = "action_csv/test_demo.csv"
+    csv_filepath = "action_csv/test_demo_down.csv"
 
     # os.system("source piper/bin/activate")
     # os.system("python3 piper_ctrl_reset.py")
     # time.sleep(1)
-    for i in tqdm(range(10), desc="Moving object as designated"):
-        pc.run_initialization()
-        pc.run_record_csv(csv_filepath_up)
-        pc.run_initialization()
-        pc.run_record_csv(csv_filepath_down)
+    # pc.run_position_joint([0, 0, 0, 0, 0, 0, 0])
+    # for i in range(1):
+    #     pc.run_record_csv(csv_filepath)
 
-    # while True:
-    #     data = pc.get_position_joint()
-    #     pc.get_record_csv(csv_filepath, data)
-    #     print(data)
+    while True:
+        data = pc.get_position_joint()
+        pc.get_record_csv(csv_filepath, data)
+        print(data)
 
     # while True:
     #     pc.run_position_joint([-1 + 30, 1, 2, -3, 6, 0, 67])
