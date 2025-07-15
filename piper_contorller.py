@@ -17,7 +17,7 @@ class PiperController():
         Output : dict
         '''
         self.time_delay = 0.005
-        self.downsampling_rate = 50
+        self.downsampling_rate = 50 # 25?
         self.motion_factor = 1000
 
         # Initialize connection
@@ -258,18 +258,18 @@ def main():
     Input : None
     Output : dict
     '''
-    pc = PiperController()
-    csv_filepath_down = "action_csv/test_demo_down.csv"
-    csv_filepath_up = "action_csv/test_demo_up.csv"
+    # pc = PiperController()
+    # csv_filepath_down = "action_csv/test_demo_down.csv"
+    # csv_filepath_up = "action_csv/test_demo_up.csv"
 
     # os.system("source piper/bin/activate")
     # os.system("python3 piper_ctrl_reset.py")
     # time.sleep(1)
-    for i in tqdm(range(10), desc="Moving object as designated"):
-        pc.run_initialization()
-        pc.run_record_csv(csv_filepath_up)
-        pc.run_initialization()
-        pc.run_record_csv(csv_filepath_down)
+    # for i in tqdm(range(2), desc="Moving object as designated"):
+    #     pc.run_initialization()
+    #     pc.run_record_csv(csv_filepath_up)
+    #     pc.run_initialization()
+    #     pc.run_record_csv(csv_filepath_down)
 
     # while True:
     #     data = pc.get_position_joint()
