@@ -11,10 +11,10 @@ from tqdm import tqdm
 class PiperController():
     def __init__(self):
         '''
-        This function captures live mouse position.
+        This function initialize CAN communication anb PiPER.
 
         Input : None
-        Output : dict
+        Output : None
         '''
         self.time_delay = 0.005
         self.downsampling_rate = 50 # 25?
@@ -24,6 +24,8 @@ class PiperController():
         os.system("bash find_all_can_port.sh")
         os.system("bash can_activate.sh piper_left 1000000 \"3-1:1.0\"")
         time.sleep(1)
+
+        # Initialize PiPER
         self.piper_left = C_PiperInterface_V2("piper_left")
         self.piper_left.ConnectPort()
         self.piper_left.ArmParamEnquiryAndConfig(0x01,0x02,0,0,0x02)
@@ -38,10 +40,10 @@ class PiperController():
         
     def get_position_gripper(self):
         '''
-        This function captures live mouse position.
+        This function captures PiPER's gripper space.
 
         Input : None
-        Output : dict
+        Output : int
         '''
         message = str(self.piper_left.GetArmGripperMsgs())
 
@@ -58,10 +60,10 @@ class PiperController():
 
     def get_position_joint(self):
         '''
-        This function captures live mouse position.
+        This function captures PiPER's joint space.
 
         Input : None
-        Output : dict
+        Output : list
         '''
         message = str(self.piper_left.GetArmJointMsgs())
 
@@ -80,10 +82,10 @@ class PiperController():
 
     def get_position_eef(self): 
         '''
-        This function captures live mouse position.
+        This function captures PiPER's eef(end-effector-field) space.
 
         Input : None
-        Output : dict
+        Output : list
         '''
         message = str(self.piper_left.GetArmEndPoseMsgs())
         eef_index_string = ["X_axis : ", "Y_axis : ", "Z_axis : ", "RX_axis : ", "RY_axis : ", "RZ_axis : "]
@@ -103,10 +105,10 @@ class PiperController():
 
     def get_normalized_value(self, value_max : int, value_min : int, value_input : int):
         '''
-        This function captures live mouse position.
+        This function expands 0.001mm space to 1mm spaces and filters valuess.
 
-        Input : None
-        Output : dict
+        Input : int, int, int
+        Output : int
         '''
         # if value_min <= value_input <= value_max:
 
@@ -124,10 +126,10 @@ class PiperController():
     
     def get_arm_status(self):
         '''
-        This function captures live mouse position.
+        This function captures status of robot and detects finish of each motion.
 
         Input : None
-        Output : dict
+        Output : bool
         '''
         message = str(self.piper_left.GetArmStatus())
 
@@ -151,6 +153,12 @@ class PiperController():
             return False
 
     def get_record_csv(self, filepath : str, value_input : list):
+        '''
+        This function captures stream of values and saves to CSV newline.
+
+        Input : str, list
+        Output : None
+        '''
         with open(filepath, mode = 'a', newline = '') as csvfile:
             value_writer = csv.writer(csvfile, lineterminator = '\n')
             value_writer.writerow([value_input])
@@ -159,10 +167,10 @@ class PiperController():
 
     def run_position_gripper(self, gripper_mm : int):
         '''
-        This function captures live mouse position.
+        This function moves along with PiPER's gripper space.
 
         Input : None
-        Output : dict
+        Output : bool
         '''
         self.piper_left.GripperCtrl(0,1000,0x02, 0)
         gripper_mm = self.get_normalized_value(70, -5, gripper_mm)
@@ -172,10 +180,10 @@ class PiperController():
     
     def run_position_joint(self, joint_value_input : list):
         '''
-        This function captures live mouse position.
+        This function moves along with PiPER's joint space.
 
         Input : None
-        Output : dict
+        Output : bool
         '''
         self.piper_left.MotionCtrl_2(0x01, 0x01, 100, 0x00)
 
@@ -197,10 +205,10 @@ class PiperController():
     
     def run_position_eef(self, eef_value_input : list):
         '''
-        This function captures live mouse position.
+        This function moves along with PiPER's eef space.
 
         Input : None
-        Output : dict
+        Output : bool
         '''
         self.piper_left.MotionCtrl_2(0x01, 0x00, 100, 0x00)
 
@@ -219,10 +227,10 @@ class PiperController():
 
     def run_initialization(self):
         '''
-        This function captures live mouse position.
+        This function set home position for every joints and gripper.
 
         Input : None
-        Output : dict
+        Output : bool
         '''
         self.piper_left.GripperCtrl(0,1000,0x01, 0xAE)
         time.sleep(self.time_delay)
@@ -234,7 +242,12 @@ class PiperController():
         return True
 
     def run_record_csv(self, filepath : str):
+        '''
+        This function run PiPER accordingly to CSV file.
 
+        Input : None
+        Output : None
+        '''
         restored_value = [0, 0, 0, 0, 0, 0, 0]
         row_count = 0
 
@@ -253,7 +266,7 @@ class PiperController():
                 
 def main():
     '''
-    This function captures live mouse position.
+    This function is main function.
 
     Input : None
     Output : dict

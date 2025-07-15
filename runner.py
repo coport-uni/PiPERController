@@ -3,10 +3,10 @@ from tqdm import tqdm
 
 def main():
     '''
-    This function captures live mouse position.
+    This function moves PiPER with CSV files.
 
     Input : None
-    Output : dict
+    Output : None
     '''
     pc = PiperController()
     csv_filepath_down = "action_csv/test_demo_down.csv"

@@ -2,10 +2,10 @@ from piper_contorller import PiperController
 
 def main():
     '''
-    This function captures live mouse position.
+    This function captures PiPER joint space data stream.
 
     Input : None
-    Output : dict
+    Output : None
     '''
     pc = PiperController()
     # csv_filepath = "action_csv/test_demo.csv"
