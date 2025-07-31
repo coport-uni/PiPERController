@@ -8,8 +8,13 @@ def main():
     Output : None
     '''
     pc = PiperController()
-    # csv_filepath = "action_csv/test_demo.csv"
-    csv_filepath = "action_csv/test_demo_down.csv"
+    # csv_filepath = "action_csv/vial_shake/vial_shake.csv"
+    # csv_filepath = "action_csv/open_spectro/open_spectro.csv"
+    # csv_filepath = "action_csv/close_spectro/close_spectro.csv"
+    # csv_filepath = "action_csv/cell_to_scale/cell_to_scale.csv"
+    # csv_filepath = "action_csv/vial_waste_to_station/vial_waste_to_station.csv"
+    csv_filepath = "action_csv/cell_to_spectro/cell_to_spectro.csv"
+
 
     while True:
         data = pc.get_position_joint()
@@ -18,3 +23,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # split action_csv/vial_shake/vial_shake.csv -l 100 vial_shake
+    # rename 's/$/.csv/' *

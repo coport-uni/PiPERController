@@ -16,8 +16,8 @@ class PiperController():
         Input : None
         Output : None
         '''
-        self.time_delay = 0.005
-        self.downsampling_rate = 50 # 25?
+        self.time_delay = 0.005 # 200Hz
+        self.downsampling_rate = 25 # 8Hz
         self.motion_factor = 1000
 
         # Initialize connection
@@ -55,6 +55,12 @@ class PiperController():
             gripper_index_number[index_number] = message.find(gripper_index_string[index_number])
 
         gripper_state = round(int(message[gripper_index_number[0] + 16:gripper_index_number[1]]) / self.motion_factor)
+
+        # if gripper_state < 30:
+        #     gripper_state = -2
+
+        # else:
+        #     gripper_state = 55
 
         return gripper_state
 
@@ -163,6 +169,7 @@ class PiperController():
             value_writer = csv.writer(csvfile, lineterminator = '\n')
             value_writer.writerow([value_input])
             csvfile.close()
+
         time.sleep(self.time_delay * self.downsampling_rate)
 
     def run_position_gripper(self, gripper_mm : int):
@@ -172,7 +179,7 @@ class PiperController():
         Input : None
         Output : bool
         '''
-        self.piper_left.GripperCtrl(0,1000,0x02, 0)
+        self.piper_left.GripperCtrl(0,5000,0x02, 0)
         gripper_mm = self.get_normalized_value(70, -5, gripper_mm)
         self.piper_left.GripperCtrl(gripper_mm, 5000, 0x01, 0)
 
@@ -232,11 +239,21 @@ class PiperController():
         Input : None
         Output : bool
         '''
-        self.piper_left.GripperCtrl(0,1000,0x01, 0xAE)
-        time.sleep(self.time_delay)
-        self.piper_left.GripperCtrl(0,1000,0x00, 0)
+        self.piper_left.GripperCtrl(0,5000,0x03, 0xAE)
 
         self.run_position_joint([0, 0, 0, 0, 0, 0, 0])
+        wait(lambda: self.get_arm_status(), timeout_seconds = 2, waiting_for="Finish of movement")
+
+        return True
+    
+    def run_motion_compensation(self):
+        '''
+        This function set home position for every joints and gripper.
+
+        Input : None
+        Output : bool
+        '''
+        self.run_position_joint(self.get_position_joint())
         wait(lambda: self.get_arm_status(), timeout_seconds = 2, waiting_for="Finish of movement")
 
         return True
