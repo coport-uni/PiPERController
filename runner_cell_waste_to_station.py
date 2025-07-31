@@ -9,7 +9,7 @@ def main():
     Output : None
     '''
     pc = PiperController()
-    csv_filepath = "action_csv/vial_waste_to_station/vial_waste_to_stationaa"
+    csv_filepath = "action_csv/cell_waste_to_station/cell_waste_to_station"
 
     for i in tqdm(range(1), desc="Moving object as designated"):
         pc.run_initialization()
@@ -20,6 +20,8 @@ def main():
         pc.run_record_csv(csv_filepath + "ac.csv")
         pc.run_motion_compensation()
         pc.run_record_csv(csv_filepath + "ad.csv")
+        pc.run_motion_compensation()
+        pc.run_record_csv(csv_filepath + "ae.csv")
         pc.run_motion_compensation()
 
 if __name__ == "__main__":

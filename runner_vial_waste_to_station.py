@@ -9,10 +9,6 @@ def main():
     Output : None
     '''
     pc = PiperController()
-    # csv_filepath = "action_csv/vial_shake/vial_shake"
-    # csv_filepath = "action_csv/open_spectro/open_spectro"
-    # csv_filepath = "action_csv/close_spectro/close_spectro"
-    # csv_filepath = "action_csv/cell_to_scale/cell_to_scale"
     csv_filepath = "action_csv/vial_waste_to_station/vial_waste_to_station"
 
     for i in tqdm(range(1), desc="Moving object as designated"):
