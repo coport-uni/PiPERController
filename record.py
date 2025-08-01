@@ -13,7 +13,8 @@ def main():
     # csv_filepath = "action_csv/close_spectro/close_spectro.csv"
     # csv_filepath = "action_csv/cell_to_scale/cell_to_scale.csv"
     # csv_filepath = "action_csv/vial_waste_to_station/vial_waste_to_station.csv"
-    csv_filepath = "action_csv/cell_waste_to_station/cell_waste_to_station.csv"
+    # csv_filepath = "action_csv/cell_waste_to_station/cell_waste_to_station.csv"
+    csv_filepath =  "action_csv/cell_to_spectro/cell_to_spectro.csv"
 
 
     while True:

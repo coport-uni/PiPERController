@@ -15,10 +15,6 @@ def main():
         pc.run_initialization()
         pc.run_record_csv(csv_filepath + "aa.csv")
         pc.run_motion_compensation()
-        pc.run_record_csv(csv_filepath + "ab.csv")
-        pc.run_motion_compensation()
-        pc.run_record_csv(csv_filepath + "ac.csv")
-        pc.run_motion_compensation()
 
 if __name__ == "__main__":
     main()
