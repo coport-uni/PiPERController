@@ -168,7 +168,7 @@ class PiPERMover:
         def __init__(self, outer):
             self.outer = outer
 
-        def run(self, *position):
+        def run(self, *position, speed : int):
             """선형 이동 (포지션 및 그리퍼 포함)"""
 
             # 각도를 변환
@@ -177,7 +177,7 @@ class PiPERMover:
             gripper_value = converted_values[6]
             
             # 명령 실행
-            self.outer.piper.MotionCtrl_2(0x01, 0x02, 20, 0x00)
+            self.outer.piper.MotionCtrl_2(0x01, 0x02, speed, 0x00)
             self.outer.piper.EndPoseCtrl(*position_values)
             self.outer.piper.GripperCtrl(abs(gripper_value), 1000, 0x01, 0)
             self.outer.check.pose(*position_values)

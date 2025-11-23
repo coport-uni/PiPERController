@@ -21,12 +21,14 @@ class PiPERControllerMK2:
         # bash can_activate.sh can0 1000000
         # bash can_activate.sh piper_left 1000000 "3-1:1.0"
         # os.system("python3 piper_ctrl_reset.py")
+        self.timeout = 3
+
         os.system("bash can_activate.sh piper_left 1000000 \"3-1:1.0\"")
         self.piper = piper
         self.piper.ConnectPort()
         self.piper_arm = PiPERMover(self.piper)
         self.piper_arm.enable.run()
-        self.time_action = 0.05
+        self.time_action = 0.01
         
     def run_move_joint(self, joint_list : list):
         self.piper_arm.movej.run(*joint_list)
@@ -47,8 +49,14 @@ class PiPERControllerMK2:
 
             time.sleep(self.time_action)
 
-    def run_move_linear_known(self, eef_list : list):
-        self.piper_arm.movel.run(*eef_list)
+    def run_move_linear_known(self, eef_list : list, speed : int):
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(self.timeout)
+        try:
+            self.piper_arm.movel.run(*eef_list, speed = speed)
+            signal.alarm(0)
+        except TimeoutError as e:
+            print("TimeOut")
         time.sleep(self.time_action)
 
     def run_move_curve(self, eef_list_1 : list, eef_list_2 : list, eef_list_3 : list):
@@ -59,12 +67,12 @@ class PiPERControllerMK2:
         ]
         self.piper_arm.movec.run(positions)
     
-    def run_piper_movement(self, input_list):
+    def run_piper_movement(self, input_list : list, motion_speed : int):
         signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(5)
+        signal.alarm(self.timeout)
         try:
             self.run_move_joint(input_list[:7])
-            self.run_move_linear_unknown(input_list[7:])
+            self.run_move_linear_known(input_list[7:], speed = motion_speed)
             signal.alarm(0)
         except TimeoutError as e:
             print("TimeOut")
@@ -94,7 +102,7 @@ class PiPERControllerMK2:
             value_writer.writerow([*joint_list, *eef_list])
             csvfile.close()
 
-        time.sleep(self.time_action * 20)
+        time.sleep(self.time_action * 10)
     
     def run_record_csv(self, filepath : str):
         '''
@@ -120,6 +128,7 @@ class PiPERControllerMK2:
 def main():
     piper_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
 
+    
     print([*piper_left.get_joint_status(), *piper_left.get_eef_status()])
 
 if __name__ == "__main__":
