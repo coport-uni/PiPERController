@@ -38,20 +38,27 @@ class PiPERControllerMK2:
         self.piper_arm.movep.run(*eef_list)
         time.sleep(self.time_action)
     
-    def run_move_linear_unknown(self, eef_list : list):
-        current_eef = self.get_eef_status()
-        # print(current_eef)
-    
-        for i in range(7):
-            action = current_eef
-            action[i] = eef_list[i]
-            self.piper_arm.movel.run(*action)
-
-            time.sleep(self.time_action)
-
-    def run_move_linear_known(self, eef_list : list, speed : int):
+    def run_move_linear_unknown(self, eef_list : list, speed : int):
+        
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(self.timeout)
+
+        current_eef = self.get_eef_status()
+
+        try:
+            for i in range(7):
+                action = current_eef
+                action[i] = eef_list[i]
+                self.piper_arm.movel.run(*action, speed = speed)
+
+            signal.alarm(0)
+        except TimeoutError as e:
+            print("TimeOut")
+        time.sleep(self.time_action)
+
+    def run_move_linear_known(self, eef_list : list, speed : int, time_out=3):
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(time_out)
         try:
             self.piper_arm.movel.run(*eef_list, speed = speed)
             signal.alarm(0)
@@ -67,12 +74,12 @@ class PiPERControllerMK2:
         ]
         self.piper_arm.movec.run(positions)
     
-    def run_piper_movement(self, input_list : list, motion_speed : int):
+    def run_piper_movement(self, input_list : list, motion_speed : int, time_out=3):
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(self.timeout)
         try:
             self.run_move_joint(input_list[:7])
-            self.run_move_linear_known(input_list[7:], speed = motion_speed)
+            self.run_move_linear_known(input_list[7:], speed = motion_speed, time_out = time_out)
             signal.alarm(0)
         except TimeoutError as e:
             print("TimeOut")
