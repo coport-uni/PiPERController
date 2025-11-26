@@ -2,7 +2,7 @@ from PiPERControllerMK2 import PiPERControllerMK2
 from piper_sdk import *
 import time
 
-def main():
+def run_lohc_action_1():
     piper_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
 
     speed_slow = 10
@@ -73,5 +73,5 @@ def main():
 
 
 if __name__ == "__main__":
-    for i in range(1):
-        main()
+    for i in range(5):
+        run_lohc_action_1()
