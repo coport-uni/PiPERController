@@ -19,11 +19,13 @@ class PiPERControllerMK2:
     def __init__(self, piper:C_PiperInterface):
         # bash can_activate.sh
         # bash can_activate.sh can0 1000000
-        # bash can_activate.sh piper_left 1000000 "3-1:1.0"
+        # os.system(bash can_activate.sh piper_left 1000000 "3-1.2:1.0")
+        # os.system(bash can_activate.sh piper_right 1000000 "3-1.3:1.0")
         # os.system("python3 piper_ctrl_reset.py")
         self.timeout = 3
 
-        os.system("bash can_activate.sh piper_left 1000000 \"3-1:1.0\"")
+        os.system("bash can_activate.sh piper_right 1000000 \"3-1.3:1.0\"")
+        os.system("bash can_activate.sh piper_left 1000000 \"3-1.2:1.0\"")
         self.piper = piper
         self.piper.ConnectPort()
         self.piper_arm = PiPERMover(self.piper)
@@ -133,7 +135,8 @@ class PiPERControllerMK2:
                 print(row_count)
 
 def main():
-    piper_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
+    # piper_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
+    piper_left = PiPERControllerMK2(C_PiperInterface("piper_right"))
 
     
     print([*piper_left.get_joint_status(), *piper_left.get_eef_status()])
