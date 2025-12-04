@@ -68,12 +68,7 @@ class PiPERControllerMK2:
             print("TimeOut")
         time.sleep(self.time_action)
 
-    def run_move_curve(self, eef_list_1 : list, eef_list_2 : list, eef_list_3 : list):
-        positions = [
-            eef_list_1.append(0x01),  # 출발점
-            eef_list_2.append(0x02),  # 경유점
-            eef_list_3.append(0x03),  # 도착점
-        ]
+    def run_move_curve(self, positions):
         self.piper_arm.movec.run(positions)
     
     def run_piper_movement(self, input_list : list, motion_speed=20, time_out=3):

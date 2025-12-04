@@ -203,49 +203,61 @@ class LOHCActionBook():
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
     
     def run_rail_to_right(self):
-        movement_z = 60
-        movement_y = 345
-        gripper_close = 0
-
         print("ActionRailRight")
-        self.piper_arm_right.run_move_joint([0, 0, 0, 0, 0, 0, 0])
-        self.piper_arm_left.run_move_joint([0, 0, 0, 0, 0, 0, 0])
-
-        # 1 Initialization Position
-        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
-        self.piper_arm_left.run_piper_movement([23, 32, -46, -6, 73, 26, 0, 62, 17, 336, 167, 35, 172, 0])
-
-        # 2 Grap bowl carrier
-        self.piper_arm_left.run_move_linear_known([139, 452 - movement_y - 13, 164 + movement_z + 20, -179, 7, -179, 80], self.speed_slow)
-        self.piper_arm_left.run_move_linear_known([139, 452 - movement_y - 13, 164, -179, 7, -179, 80])
-        self.piper_arm_left.run_move_linear_known([139, 452 - movement_y - 13, 164, -179, 7, -179, gripper_close])
-        self.piper_arm_left.run_move_linear_known([139, 452, 164, -179, 7, -179, gripper_close], time_out = 10)
-
-        # 3 Move bowl carrier to right and release it
-        self.piper_arm_left.run_piper_movement([74, 134, -113, -7, 73, 75, gripper_close, 139, 452, 164, -179, 7, -179, gripper_close],self.speed_slow)
-        self.piper_arm_left.run_piper_movement([74, 134, -113, -7, 73, 75, 63, 139, 452, 164, -179, 7, -179, 63],self.speed_slow)
-        self.piper_arm_left.run_piper_movement([77, 119, -102, -13, 65, 80, 80, 120, 426, 233, 170, 15, 179, 80])
-
-        # 4 Return left arm
-        self.piper_arm_left.run_piper_movement([23, 32, -46, -6, 73, 26, 0, 62, 17, 336, 167, 35, 172, 0])
-        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
 
     def run_shaking(self):
+
+        movement_z = 80
+        gripper_close = 0
+
         print("shaking")
 
-    def run_test(self):
-        # 1 start from home
-        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0], self.speed_default)
-        # 2 test some actions
-        self.piper_arm_left.run_move_linear_known([56, 0, 313, 0, 85, 0, 0], self.speed_default)
-        self.piper_arm_left.run_move_linear_known([56, 0, 313, 0, 85, 100, 0], self.speed_default)
-        # 3 return home
-        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0], self.speed_default)
+        # 1 Initialize arm
+        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
+        self.piper_arm_left.run_piper_movement([36, 44, -38, 0, 59, -3, 0, 98, 71, 283, -179, 30, -141, 0])
+        self.piper_arm_left.run_piper_movement([32, 72, -44, 0, 67, 31, 74, 161, 101, 237, 180, 1, -178, 74])
 
+        # 2 grap bowl carrier and move it to shaker zone
+        self.pa.run_digital_write(self.railmagnet, False)
+        self.piper_arm_left.run_move_linear_known([161, 101, 237 - movement_z, 180, 1, -178, 74])
+        self.piper_arm_left.run_move_linear_known([161, 101, 237 - movement_z, 180, 1, -178, gripper_close], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([161, 101, 237 + movement_z, 180, 1, -178, gripper_close], self.speed_slow)
+        
+
+        # 3 shaking bowl carrier by nearly hitting it
+        self.piper_arm_left.run_piper_movement([96, 65, -63, 1, 70, 7, gripper_close, -22, 199, 347, 176, 23, -92, gripper_close])
+
+        self.piper_arm_left.run_move_joint([96, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_move_joint([96, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
+
+        self.piper_arm_left.run_move_joint([96, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_move_joint([96, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
+
+        self.piper_arm_left.run_move_joint([96, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_move_joint([96, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
+
+        self.piper_arm_left.run_piper_movement([96, 65, -63, 1, 70, 7, gripper_close, -22, 199, 347, 176, 23, -92, gripper_close])
+   
+        # 4 return bowl carrier
+        self.pa.run_digital_write(self.railmagnet, True)
+        self.piper_arm_left.run_move_joint([32, 65, -63, 1, 70, 7, gripper_close])
+        self.piper_arm_left.run_piper_movement([32, 72, -44, 0, 67, 31, gripper_close, 161, 101, 237, 180, 1, -178, gripper_close])
+        self.piper_arm_left.run_move_linear_known([161, 101, 237 - movement_z, 180, 1, -178, gripper_close], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([161, 101 - 10, 237 - movement_z, 180, 1, -178, gripper_close], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([161, 101 - 10, 237 - movement_z, 180, 1, -178, 80], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([161, 101 - 10, 237, 180, 1, -178, 80], self.speed_slow)
+
+        # 5 Return robot arm
+        self.piper_arm_left.run_piper_movement([32, 72, -44, 0, 67, 31, 74, 161, 101, 237, 180, 1, -178, 74],self.speed_slow)
+        self.piper_arm_left.run_piper_movement([36, 44, -38, 0, 59, -3, 0, 98, 71, 283, -179, 30, -141, 0])
+        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
+        
+        
 if __name__ == "__main__":
     lab = LOHCActionBook()
-    for i in range(1):
-        # lab.run_test()
+    for i in range(3):
         # lab.run_lohc_action_8_1()
         # lab.run_lohc_action_8_2()
-        lab.run_rail_to_left()
+        # lab.run_rail_to_left()
+        # lab.run_rail_to_right()
+        lab.run_shaking()
