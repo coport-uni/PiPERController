@@ -130,7 +130,7 @@ class PiPERMover:
         def __init__(self, outer):
             self.outer = outer
 
-        def run(self, *position):
+        def run(self, *position, speed : int):
             """7개의 개별 값을 받아서 조인트 이동"""
 
             # 각도를 변환
@@ -139,7 +139,7 @@ class PiPERMover:
             gripper_value = converted_values[6]
             
             # 명령 실행
-            self.outer.piper.MotionCtrl_2(0x01, 0x01, 20, 0x00)
+            self.outer.piper.MotionCtrl_2(0x01, 0x01, speed, 0x00)
             self.outer.piper.JointCtrl(*joint_values)
             self.outer.piper.GripperCtrl(abs(gripper_value), 1000, 0x01, 0)
             self.outer.check.joint(*joint_values)            

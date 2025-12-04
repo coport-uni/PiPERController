@@ -24,41 +24,41 @@ class PiPERControllerMK2:
         # os.system("python3 piper_ctrl_reset.py")
         self.timeout = 3
 
-        os.system("bash can_activate.sh piper_right 1000000 \"3-1.3:1.0\"")
-        os.system("bash can_activate.sh piper_left 1000000 \"3-1.2:1.0\"")
+        # os.system("bash can_activate.sh piper_right 1000000 \"3-1.3:1.0\"")
+        # os.system("bash can_activate.sh piper_left 1000000 \"3-1.2:1.0\"")
         self.piper = piper
         self.piper.ConnectPort()
         self.piper_arm = PiPERMover(self.piper)
         self.piper_arm.enable.run()
         self.time_action = 0.01
         
-    def run_move_joint(self, joint_list : list):
-        self.piper_arm.movej.run(*joint_list)
+    def run_move_joint(self, joint_list : list, speed=20):
+        self.piper_arm.movej.run(*joint_list, speed = speed)
         time.sleep(self.time_action)
 
     def run_move_natural(self, eef_list : list):
         self.piper_arm.movep.run(*eef_list)
         time.sleep(self.time_action)
     
-    def run_move_linear_unknown(self, eef_list : list, speed : int):
+    # def run_move_linear_unknown(self, eef_list : list, speed : int):
         
-        signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(self.timeout)
+    #     signal.signal(signal.SIGALRM, timeout_handler)
+    #     signal.alarm(self.timeout)
 
-        current_eef = self.get_eef_status()
+    #     current_eef = self.get_eef_status()
 
-        try:
-            for i in range(7):
-                action = current_eef
-                action[i] = eef_list[i]
-                self.piper_arm.movel.run(*action, speed = speed)
+    #     try:
+    #         for i in range(7):
+    #             action = current_eef
+    #             action[i] = eef_list[i]
+    #             self.piper_arm.movel.run(*action, speed = speed)
 
-            signal.alarm(0)
-        except TimeoutError as e:
-            print("TimeOut")
-        time.sleep(self.time_action)
+    #         signal.alarm(0)
+    #     except TimeoutError as e:
+    #         print("TimeOut")
+    #     time.sleep(self.time_action)
 
-    def run_move_linear_known(self, eef_list : list, speed : int, time_out=3):
+    def run_move_linear_known(self, eef_list : list, speed=20, time_out=3):
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(time_out)
         try:
@@ -76,11 +76,11 @@ class PiPERControllerMK2:
         ]
         self.piper_arm.movec.run(positions)
     
-    def run_piper_movement(self, input_list : list, motion_speed : int, time_out=3):
+    def run_piper_movement(self, input_list : list, motion_speed=20, time_out=3):
         signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(self.timeout)
+        signal.alarm(time_out)
         try:
-            self.run_move_joint(input_list[:7])
+            self.run_move_joint(input_list[:7], speed = motion_speed)
             self.run_move_linear_known(input_list[7:], speed = motion_speed, time_out = time_out)
             signal.alarm(0)
         except TimeoutError as e:
@@ -98,47 +98,46 @@ class PiPERControllerMK2:
         # print(self.get_inverter(self.piper_arm.check.get_eef_status()))
         return self.get_inverter(self.piper_arm.check.get_eef_status())
     
-    def get_record_csv(self, filepath : str, joint_list : list, eef_list : list):
-        '''
-        This function captures stream of values and saves to CSV newline.
+    # def get_record_csv(self, filepath : str, joint_list : list, eef_list : list):
+    #     '''
+    #     This function captures stream of values and saves to CSV newline.
 
-        Input : str, str
-        Output : None
-        '''
-        with open(filepath, mode = 'a', newline = '') as csvfile:
-            value_writer = csv.writer(csvfile, lineterminator = '\n')
+    #     Input : str, str
+    #     Output : None
+    #     '''
+    #     with open(filepath, mode = 'a', newline = '') as csvfile:
+    #         value_writer = csv.writer(csvfile, lineterminator = '\n')
 
-            value_writer.writerow([*joint_list, *eef_list])
-            csvfile.close()
+    #         value_writer.writerow([*joint_list, *eef_list])
+    #         csvfile.close()
 
-        time.sleep(self.time_action * 10)
+    #     time.sleep(self.time_action * 10)
     
-    def run_record_csv(self, filepath : str):
-        '''
-        This function run PiPER accordingly to CSV file.
+    # def run_record_csv(self, filepath : str):
+    #     '''
+    #     This function run PiPER accordingly to CSV file.
 
-        Input : None
-        Output : None
-        '''
-        restored_value = [0, 0, 0, 0, 0, 0, 0]
-        row_count = 0
+    #     Input : None
+    #     Output : None
+    #     '''
+    #     restored_value = [0, 0, 0, 0, 0, 0, 0]
+    #     row_count = 0
 
-        with open(filepath, 'r', newline='', encoding='utf-8') as csvfile:
-            value_reader = csv.reader(csvfile, lineterminator = '\n')
-            for row_data in value_reader:
-                processed_data = str(row_data).replace("'", "").replace("[", "").replace("]", "").split(",")
-                restored_value = [int(x) for x in processed_data]
+    #     with open(filepath, 'r', newline='', encoding='utf-8') as csvfile:
+    #         value_reader = csv.reader(csvfile, lineterminator = '\n')
+    #         for row_data in value_reader:
+    #             processed_data = str(row_data).replace("'", "").replace("[", "").replace("]", "").split(",")
+    #             restored_value = [int(x) for x in processed_data]
                 
-                # print(restored_value)
-                self.run_piper_movement(restored_value)
-                row_count = row_count + 1
-                print(row_count)
+    #             # print(restored_value)
+    #             self.run_piper_movement(restored_value)
+    #             row_count = row_count + 1
+    #             print(row_count)
 
 def main():
-    # piper_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
-    piper_left = PiPERControllerMK2(C_PiperInterface("piper_right"))
+    piper_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
+    # piper_left = PiPERControllerMK2(C_PiperInterface("piper_right"))
 
-    
     print([*piper_left.get_joint_status(), *piper_left.get_eef_status()])
 
 if __name__ == "__main__":
