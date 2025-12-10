@@ -149,8 +149,9 @@ class LOHCActionBook():
         # self.piper_arm_right.run_piper_movement([37, 30, -10, -4, -17, 2, gripper_close, 89, 70, 254, -44, 89, -5, gripper_close], self.speed_default)
 
         # 4 return funnel carrier
-        self.piper_arm_right.run_move_linear_known([89, 70, 254, -44, 89, -5, gripper_close], self.speed_slow)
-        self.piper_arm_right.run_move_linear_known([86, 67, 254, -44, 89, -5, gripper_close], self.speed_slow)
+        self.piper_arm_right.run_move_linear_known([89, 70, 254 + 10, -44, 89, -5, gripper_close], self.speed_slow)
+        self.piper_arm_right.run_piper_movement([37, 30, -10, -4, -17, 2, gripper_close, 89, 70, 254, -44, 89, -5, gripper_close], self.speed_slow)
+        self.piper_arm_right.run_piper_movement([37, 30, -10, -4, -17, 2, 60, 89, 70, 254, -44, 89, -5, 72], self.speed_slow)
 
         # 5 funnel carrier and return home
         self.piper_arm_right.run_piper_movement([37, 5, -11, 1, 10, 0, 72, 43, 34, 256, 52, 88, 90, 72], self.speed_slow)
@@ -224,17 +225,20 @@ class LOHCActionBook():
         self.piper_arm_left.run_move_linear_known([161, 101, 237 + movement_z, 180, 1, -178, gripper_close], self.speed_slow)
         
 
-        # 3 shaking bowl carrier by nearly hitting it
+        # 3 shaking bowl carrier by nearly not hitting it
         self.piper_arm_left.run_piper_movement([96, 65, -63, 1, 70, 7, gripper_close, -22, 199, 347, 176, 23, -92, gripper_close])
 
         self.piper_arm_left.run_move_joint([96, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
-        self.piper_arm_left.run_move_joint([96, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
+        time.sleep(2)
+        self.piper_arm_left.run_move_joint([116, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
 
         self.piper_arm_left.run_move_joint([96, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
-        self.piper_arm_left.run_move_joint([96, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
+        time.sleep(2)
+        self.piper_arm_left.run_move_joint([116, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
 
         self.piper_arm_left.run_move_joint([96, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
-        self.piper_arm_left.run_move_joint([96, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
+        time.sleep(2)
+        self.piper_arm_left.run_move_joint([116, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
 
         self.piper_arm_left.run_piper_movement([96, 65, -63, 1, 70, 7, gripper_close, -22, 199, 347, 176, 23, -92, gripper_close])
    
@@ -251,13 +255,38 @@ class LOHCActionBook():
         self.piper_arm_left.run_piper_movement([32, 72, -44, 0, 67, 31, 74, 161, 101, 237, 180, 1, -178, 74],self.speed_slow)
         self.piper_arm_left.run_piper_movement([36, 44, -38, 0, 59, -3, 0, 98, 71, 283, -179, 30, -141, 0])
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
+    
+    def run_lohc_action_4(self):
+        print("action 4")
+
+        movement_z = 80
+        gripper_close = 0
+
+        print("Action4")
+
+        # 1 Initialize arm
+        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
+        self.piper_arm_left.run_piper_movement([-2, 22, -34, 0, 19, -4, 74, 75, -3, 357, -114, 86, -116, 74])
+        self.piper_arm_left.run_piper_movement([92, 73, -36, 2, -32, -1, 74, -9, 269, 291, -91, 90, 0, 74])
         
+        # 2 Grap macja
         
+
+        # 3 Do grinding
+
+        # 4 Return macja
+
+        # 5 Return arm
+        self.piper_arm_left.run_piper_movement([-2, 22, -34, 0, 19, -4, 74, 75, -3, 357, -114, 86, -116, 74])
+        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
+
 if __name__ == "__main__":
     lab = LOHCActionBook()
     for i in range(3):
+        # lab.run_lohc_action_1()
         # lab.run_lohc_action_8_1()
         # lab.run_lohc_action_8_2()
         # lab.run_rail_to_left()
         # lab.run_rail_to_right()
-        lab.run_shaking()
+        # lab.run_shaking()
+        lab.run_lohc_action_4()
