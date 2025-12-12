@@ -257,12 +257,82 @@ class LOHCActionBook():
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
     
     def run_lohc_action_4(self):
-        print("action 4")
-
         movement_z = 80
+        movement_y = 65
         gripper_close = 0
 
+        movement_swing = 25
+        movement_swing_cali = 15
         print("Action4")
+
+        def _grinding_action():
+            self.piper_arm_left.run_piper_movement([18, 40, -12, -3, -31, 0, gripper_close, 148, 52, 247, -98, 87, -78, gripper_close])
+
+            # First
+            print("1")
+            self.piper_arm_left.run_move_joint([23, 54, -5, 4, -30, -7, gripper_close], self.speed_slow)
+            self.piper_arm_left.run_move_joint([23, 54, -5, 4, -30, -7 + movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([23, 54, -5, 4, -30, -7 - movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([23, 54, -5, 4, -30, -7, gripper_close], self.speed_default)
+
+            self.piper_arm_left.run_piper_movement([18, 40, -12, -3, -31, 0, gripper_close, 148, 52, 247, -98, 87, -78, gripper_close], self.speed_slow, time_out = 20)
+
+            # Second
+            print("2")
+            self.piper_arm_left.run_move_joint([18, 69, 0, -3, -57, 0, gripper_close], self.speed_slow)
+            self.piper_arm_left.run_move_joint([18, 69, 0, -3, -57, 0 + movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([18, 69, 0, -3, -57, 0 - movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([18, 69, 0, -3, -57, 0, gripper_close], self.speed_default)
+
+            self.piper_arm_left.run_piper_movement([18, 40, -12, -3, -31, 0, gripper_close, 148, 52, 247, -98, 87, -78, gripper_close], self.speed_slow, time_out = 20)
+
+            self.piper_arm_left.run_move_joint([23, 69, 0, -3, -57, 0, gripper_close], self.speed_slow)
+            # self.piper_arm_left.run_move_joint([23, 69, 0, -3, -57, 0 + movement_swing - movement_swing_cali, gripper_close], self.speed_slow)
+            self.piper_arm_left.run_move_joint([23, 69, 0, -3, -57, 0 - movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([23, 69, 0, -3, -57, 0, gripper_close], self.speed_default)
+
+            self.piper_arm_left.run_piper_movement([18, 40, -12, -3, -31, 0, gripper_close, 148, 52, 247, -98, 87, -78, gripper_close], self.speed_slow, time_out = 20)
+        
+            # Third
+            print("3")
+            self.piper_arm_left.run_move_joint([23, 65, -4, 2, -48, -6, gripper_close], self.speed_slow)
+            self.piper_arm_left.run_move_joint([23, 66, -4, 2, -48, -6 + movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([23, 65, -4, 2, -48, -6 - movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([23, 65, -4, 2, -48, -6, gripper_close], self.speed_default)
+
+            self.piper_arm_left.run_piper_movement([18, 40, -12, -3, -31, 0, gripper_close, 148, 52, 247, -98, 87, -78, gripper_close], self.speed_slow, time_out = 20)
+
+            self.piper_arm_left.run_move_joint([18, 65, -4, 2, -48, -6, gripper_close], self.speed_slow)
+            self.piper_arm_left.run_move_joint([18, 66, -4, 2, -48, -6 + movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([18, 65, -4, 2, -48, -6 - movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([18, 65, -4, 2, -48, -6, gripper_close], self.speed_default)
+
+            self.piper_arm_left.run_piper_movement([18, 40, -12, -3, -31, 0, gripper_close, 148, 52, 247, -98, 87, -78, gripper_close], self.speed_slow, time_out = 20)
+
+            # Forth
+            print("4")
+            self.piper_arm_left.run_move_joint([18, 75, -3, 2, -61, 0, gripper_close], self.speed_slow)
+            self.piper_arm_left.run_move_joint([18, 75, -3, 2, -61, 0 + movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([18, 75, -3, 2, -61, 0 - movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([18, 75, -3, 2, -61, 0, gripper_close], self.speed_default)
+
+            self.piper_arm_left.run_piper_movement([18, 40, -12, -3, -31, 0, gripper_close, 148, 52, 247, -98, 87, -78, gripper_close], self.speed_slow, time_out = 20)
+
+            self.piper_arm_left.run_move_joint([23, 75, -3, 2, -61, 0, gripper_close], self.speed_slow)
+            # self.piper_arm_left.run_move_joint([23, 75, -3, 2, -61, 0 + movement_swing - movement_swing_cali, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([23, 75, -3, 2, -61, 0 - movement_swing, gripper_close], self.speed_default)
+            self.piper_arm_left.run_move_joint([23, 75, -3, 2, -61, 0, gripper_close], self.speed_default)
+
+            self.piper_arm_left.run_piper_movement([18, 40, -12, -3, -31, 0, gripper_close, 148, 52, 247, -98, 87, -78, gripper_close])
+
+            # self.piper_arm_left.run_move_curve([[148 - movement_c1, 52, 187 - movement_c1_z, -98, 87, -78, 0x01], \
+            #                                     [148, 52 + movement_c1, 187 - movement_c1_z, -98, 87, -78, 0x02], \
+            #                                     [148 + movement_c1, 52, 187 - movement_c1_z, -98, 87, -78, 0x03]])
+            # time.sleep(10)
+            # self.piper_arm_left.run_move_curve([[148 + movement_c1, 52, 187 - movement_c1_z, -98, 87, -78, 0x01], \
+            #                                     [148, 52 - movement_c1, 187 - movement_c1_z, -98, 87, -78, 0x02], \
+            #                                     [148 - movement_c1, 52, 187 - movement_c1_z, -98, 87, -78, 0x03]])
+            # time.sleep(10)
 
         # 1 Initialize arm
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
@@ -270,15 +340,41 @@ class LOHCActionBook():
         self.piper_arm_left.run_piper_movement([92, 73, -36, 2, -32, -1, 74, -9, 269, 291, -91, 90, 0, 74])
         
         # 2 Grap macja
+        self.piper_arm_left.run_move_linear_known([-9, 269 + movement_y, 291, -91, 90, 0, 74], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([-9, 269 + movement_y, 291, -91, 90, 0, gripper_close])
+        self.piper_arm_left.run_piper_movement([92, 80, -62, 3, -13, -3, gripper_close, -9, 269 + movement_y, 291 + movement_z, -91, 90, 0, gripper_close], self.speed_slow)
         
-
         # 3 Do grinding
+        self.piper_arm_left.run_piper_movement([53, 52, -57, -3, 21, -1, gripper_close, 115, 150, 417, -159, 78, -107, gripper_close])
+    
+        for i in range(1):
+            _grinding_action()
+        
+        self.piper_arm_left.run_piper_movement([53, 52, -57, -3, 21, -1, gripper_close, 115, 150, 417, -159, 78, -107, gripper_close])
 
         # 4 Return macja
+        self.piper_arm_left.run_piper_movement([92, 80, -62, 3, -13, -3, gripper_close, -9, 269 + movement_y - 8, 291 + movement_z, -91, 90, 0, gripper_close])
+        self.piper_arm_left.run_move_linear_known([-9, 269 + movement_y - 8, 291, -91, 90, 0, gripper_close], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([-9, 269 + movement_y - 8, 291, -91, 90, 0, 74])
+        self.piper_arm_left.run_move_linear_known([-9, 269 - movement_y - 8, 291, -91, 90, 0, 74], self.speed_slow)
 
         # 5 Return arm
         self.piper_arm_left.run_piper_movement([-2, 22, -34, 0, 19, -4, 74, 75, -3, 357, -114, 86, -116, 74])
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
+
+    def run_test(self):
+            self.piper_arm_left.run_move_curve([
+            [60, 0, 250, 0, 85, 0, 0x01], # 출발점
+            [200, 0, 400, 0, 85, 0, 0x02], # 경유점
+            [60, 0, 550, 0, 85, 0, 0x03], # 도착점
+            ])
+            time.sleep(15)
+            self.piper_arm_left.run_move_curve([
+            [60, 0, 550, 0, 85, 0, 0x01], # 출발점
+            [200, 0, 400, 0, 85, 0, 0x02], # 경유점
+            [60, 0, 250, 0, 85, 0, 0x03], # 도착점
+            ])
+            time.sleep(15)
 
 if __name__ == "__main__":
     lab = LOHCActionBook()
@@ -290,3 +386,4 @@ if __name__ == "__main__":
         # lab.run_rail_to_right()
         # lab.run_shaking()
         lab.run_lohc_action_4()
+        # lab.run_test()

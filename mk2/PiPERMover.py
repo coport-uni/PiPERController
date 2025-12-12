@@ -185,11 +185,7 @@ class PiPERMover:
     class MoveC:
         def __init__(self, outer):
             self.outer = outer
-            time.sleep(0.005)
-
-    class MoveC:
-        def __init__(self, outer):
-            self.outer = outer
+            time.sleep(0.05)
 
         def run(self, positions):
             """원호 이동 (포지션 및 그리퍼 포함)"""
@@ -198,5 +194,5 @@ class PiPERMover:
             for position in positions:
                 converted_values = self.outer.convert.run(position)
                 self.outer.piper.EndPoseCtrl(*converted_values[:-1])
-                self.outer.piper.MoveCAxisUpdateCtrl(position[-1])      
+                self.outer.piper.MoveCAxisUpdateCtrl(position[-1])
             time.sleep(0.005)

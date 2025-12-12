@@ -45,8 +45,9 @@ class Picus2Controller:
         print("Dispense Complete")
 
         # Trashing remained liquid
-        # for i in range(2):
-        #     self.run_serial_command("button", "TRIGGER_BUTTON_TOP", delay=0.01)
+        self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        for i in range(3):
+            self.run_serial_command("button", "TRIGGER_BUTTON_TOP_DOUBLE", delay=0.25)
 
 if __name__ == "__main__":
     p2c = Picus2Controller("/dev/ttyACM2")
