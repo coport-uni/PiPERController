@@ -10,13 +10,32 @@ import csv
 import signal
 
 class TimeoutError(Exception):
+    """
+    This function handles exceptions from code
+
+    Input : None
+    Output : None
+    """
     pass
 
 def timeout_handler(signum, frame):
+    """
+    This function raise error when timout happen
+
+    Input : None
+    Output : None
+    """
     raise TimeoutError("Operation timed out")
 
 class PiPERControllerMK2:
     def __init__(self, piper:C_PiperInterface):
+        """
+        This function initialize basic class and initialize CAN communication. PiPER is works on 0.001(mm) resolution
+
+        Input : String
+        Output : None
+        """
+        
         # bash can_activate.sh
         # bash can_activate.sh can0 1000000
         # os.system(bash can_activate.sh piper_left 1000000 "3-1.2:1.0")
@@ -33,10 +52,22 @@ class PiPERControllerMK2:
         self.time_action = 0.01
         
     def run_move_joint(self, joint_list : list, speed=20):
+        """
+        This function move PiPER with joint operation
+
+        Input : list, int 
+        Output : None
+        """
         self.piper_arm.movej.run(*joint_list, speed = speed)
         time.sleep(self.time_action)
 
     def run_move_natural(self, eef_list : list):
+        """
+        This function move PiPER with approximated end effector field operation. I am not sure that it has any use cases.
+
+        Input : list
+        Output : None
+        """
         self.piper_arm.movep.run(*eef_list)
         time.sleep(self.time_action)
     
@@ -59,6 +90,12 @@ class PiPERControllerMK2:
     #     time.sleep(self.time_action)
 
     def run_move_linear_known(self, eef_list : list, speed=20, time_out=3):
+        """
+        This function move PiPER with precise end effector field operation. time_out is recommended between 3 ~ 10  
+
+        Input : list, int, int
+        Output : None
+        """
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(time_out)
         try:
@@ -69,9 +106,22 @@ class PiPERControllerMK2:
         time.sleep(self.time_action)
 
     def run_move_curve(self, positions):
+        """
+        This function move PiPER with precise end effector field operation. Keep in mind it need three eef postion with marking. 
+        Please read PiPERMover for more information.
+
+        Input : list, int, int
+        Output : None
+        """
         self.piper_arm.movec.run(positions)
     
     def run_piper_movement(self, input_list : list, motion_speed=20, time_out=3):
+        """
+        This function move PiPER with joint-eef hybrid position. Since PiPER oftenly fails on calculating eef, using hybrid operation mode is highly recommended
+
+        Input : list, int, int
+        Output : None
+        """
         signal.signal(signal.SIGALRM, timeout_handler)
         signal.alarm(time_out)
         try:
@@ -82,14 +132,32 @@ class PiPERControllerMK2:
             print("TimeOut")
 
     def get_inverter(self, positions):
+        """
+        This function autonomouse scale each coordinate to 0.001(mm) system
+
+        Input : list
+        Output : None
+        """
             inverted = [round(p / 1000) for p in positions]
             return inverted
     
     def get_joint_status(self):
+        """
+        This function return PiPER current joint coordinate system with gripper. Make sure teaching mode(green light) is off.
+
+        Input : None
+        Output : list
+        """
         # print(self.get_inverter(self.piper_arm.check.get_joint_status()))
         return self.get_inverter(self.piper_arm.check.get_joint_status())
 
     def get_eef_status(self):
+        """
+        This function return PiPER current eef coordinate system with gripper. Make sure teaching mode(green light) is off.
+
+        Input : None
+        Output : list
+        """
         # print(self.get_inverter(self.piper_arm.check.get_eef_status()))
         return self.get_inverter(self.piper_arm.check.get_eef_status())
     
@@ -130,6 +198,12 @@ class PiPERControllerMK2:
     #             print(row_count)
 
 def main():
+    """
+    This function holds example main flow
+
+    Input : None
+    Output : None
+    """
     piper_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
     # piper_left = PiPERControllerMK2(C_PiperInterface("piper_right"))
 

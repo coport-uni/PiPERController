@@ -5,9 +5,22 @@ import logging
 
 class PyArduino():
     def __init__(self):
+        """
+        This function get address of Picus2 from user and initialize serial communication. It's dectection processes are automated
+        Make sure you're using right arduino version!
+
+        Input : None
+        Output : None
+        """
         self.board = telemetrix_uno_r4_wifi.TelemetrixUnoR4WiFi(transport_type=1)
 
     def run_digital_write(self, pin_number : int, pin_state : bool):
+        """
+        This function write arduino digital pins. Double checking with 13 led is recommended.
+
+        Input : int, bool
+        Output : None
+        """
         self.board.set_pin_mode_digital_output(pin_number)
 
         if pin_state is True:
@@ -24,6 +37,12 @@ class PyArduino():
         # self.board.shutdown()
     
     def get_digital_state(self, pin_number : int):
+        """
+        This function read arduino digital pins. Double checking with any pin is recommended.
+
+        Input : int
+        Output : int
+        """
         global digital_value
         digital_value = None
         self.board.set_pin_mode_digital_input_pullup(pin_number, callback = self.get_digital_state_slicer)
@@ -36,6 +55,12 @@ class PyArduino():
         return digital_value
 
     def get_digital_state_slicer(self, data):
+        """
+        This internal function slicing arduino's output datastream.
+
+        Input : str
+        Output : int
+        """
         global digital_value
         pin_mode_index = 0
         pin_number_index = 1
@@ -44,18 +69,28 @@ class PyArduino():
         digital_value = data[pin_state_index]
 
     def get_analog_state(self, pin_number : int):
+        """
+        This function read arduino analog pins. Double checking with any pin is recommended.
+
+        Input : int
+        Output : int
+        """
         global analog_value
+
         analog_value = None
         self.board.set_pin_mode_analog_input(pin_number, differential = 0, callback = self.get_analog_state_slicer)
-
         while analog_value is None:
             time.sleep(0.01)
-
-        # self.board.shutdown()
 
         return analog_value
 
     def get_analog_state_slicer(self, data):
+        """
+        This internal function slicing arduino's output datastream.
+
+        Input : str
+        Output : int
+        """
         global analog_value
         pin_mode_index = 0
         pin_number_index = 1
@@ -66,6 +101,12 @@ class PyArduino():
         analog_value = data[pin_state_index]
     
 def main():
+    """
+    This function holds example main flow
+
+    Input : None
+    Output : None
+    """
     pa = PyArduino()
     # 센서 예제
     while True:

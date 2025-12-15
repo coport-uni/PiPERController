@@ -7,10 +7,15 @@ from piper_sdk import *
 
 class PiPERMover:
     def __init__(self, piper: C_PiperInterface_V2):
-        self.piper = piper
-        self.factor = 1000  # 변환 계수 설정
+        """
+        This function initialize basic class and initialize CAN communication. PiPER is works on 0.001(mm) resolution
 
-        # 중첩 클래스 인스턴스 생성
+        Input : String
+        Output : None
+        """
+        self.piper = piper
+        self.factor = 1000
+
         self.enable = self.Enable(self.piper)
         self.convert = self.Convert(self)
         self.check = self.Check(self)

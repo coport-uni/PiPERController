@@ -1,11 +1,19 @@
 from PiPERControllerMK2 import PiPERControllerMK2
+from Picus2Controller import Picus2Controller
 from piper_sdk import *
 from PyArduino import PyArduino
 import time
 
 class LOHCActionBook():
     def __init__(self):
+        """
+        This function initialize two auxillary modules and PiPER CAN modules. And also check if it's valid
+
+        Input : None
+        Output : None
+        """
         self.pa = PyArduino()
+        self.pc = Picus2Controller()
 
         self.piper_arm_right = PiPERControllerMK2(C_PiperInterface("piper_right"))
         self.piper_arm_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
@@ -24,6 +32,12 @@ class LOHCActionBook():
         self.pa.run_digital_write(self.railmagnet, True)
 
     def run_lohc_action_1(self):
+        """
+        This function contains motion for action 1 : Pouring powder to bowl
+
+        Input : None
+        Output : None
+        """
         gripper_close = 40
 
         print("Action1")
@@ -81,6 +95,12 @@ class LOHCActionBook():
         self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0], self.speed_default)
             
     def run_lohc_action_8_1(self):
+        """
+        This function contains motion for action 8 : Shaking funnel
+
+        Input : None
+        Output : None
+        """
         movement_z = 75
         gripper_close = 0
 
@@ -124,6 +144,12 @@ class LOHCActionBook():
         self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 73], self.speed_default)
     
     def run_lohc_action_8_2(self):
+        """
+        This function contains motion for action 8 : Pouring bowl to funnel
+
+        Input : None
+        Output : None
+        """
         movement_z = 100
         gripper_close = 0
 
@@ -159,6 +185,12 @@ class LOHCActionBook():
         self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 76, 56, 0, 213, 0, 85, 0, 76], self.speed_default)
 
     def run_rail_to_left(self):
+        """
+        This function contains motion for action X : moving rail to left
+
+        Input : None
+        Output : None
+        """
         movement_z = 60
         movement_y = 345
         gripper_close = 0
@@ -204,14 +236,26 @@ class LOHCActionBook():
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
     
     def run_rail_to_right(self):
+        """
+        This function contains motion for action X : moving rail to right
+        #WIP#
+
+        Input : None
+        Output : None
+        """
         print("ActionRailRight")
 
-    def run_shaking(self):
+    def run_lohc_action_6(self):
+        """
+        This function contains motion for action 6 : Shaking bowl
 
+        Input : None
+        Output : None
+        """
         movement_z = 80
         gripper_close = 0
 
-        print("shaking")
+        print("Action 6")
 
         # 1 Initialize arm
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
@@ -226,21 +270,21 @@ class LOHCActionBook():
         
 
         # 3 shaking bowl carrier by nearly not hitting it
-        self.piper_arm_left.run_piper_movement([96, 65, -63, 1, 70, 7, gripper_close, -22, 199, 347, 176, 23, -92, gripper_close])
+        self.piper_arm_left.run_move_joint([0, 65, -63, 1, 70, 7, gripper_close])
 
-        self.piper_arm_left.run_move_joint([96, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_move_joint([0, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
         time.sleep(2)
-        self.piper_arm_left.run_move_joint([116, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_move_joint([0, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
 
-        self.piper_arm_left.run_move_joint([96, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_move_joint([0, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
         time.sleep(2)
-        self.piper_arm_left.run_move_joint([116, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_move_joint([0, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
 
-        self.piper_arm_left.run_move_joint([96, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_move_joint([0, 65, -83, 1, 70, 7, gripper_close], self.speed_fast)
         time.sleep(2)
-        self.piper_arm_left.run_move_joint([116, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_move_joint([0, 65, -58, 1, 70, 7, gripper_close], self.speed_fast)
 
-        self.piper_arm_left.run_piper_movement([96, 65, -63, 1, 70, 7, gripper_close, -22, 199, 347, 176, 23, -92, gripper_close])
+        self.piper_arm_left.run_move_joint([0, 65, -63, 1, 70, 7, gripper_close])
    
         # 4 return bowl carrier
         self.pa.run_digital_write(self.railmagnet, True)
@@ -257,6 +301,12 @@ class LOHCActionBook():
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
     
     def run_lohc_action_4(self):
+        """
+        This function contains motion for action 4 : Grinding bowl
+
+        Input : None
+        Output : None
+        """
         movement_z = 80
         movement_y = 65
         gripper_close = 0
@@ -353,28 +403,44 @@ class LOHCActionBook():
         self.piper_arm_left.run_piper_movement([53, 52, -57, -3, 21, -1, gripper_close, 115, 150, 417, -159, 78, -107, gripper_close])
 
         # 4 Return macja
-        self.piper_arm_left.run_piper_movement([92, 80, -62, 3, -13, -3, gripper_close, -9, 269 + movement_y - 8, 291 + movement_z, -91, 90, 0, gripper_close])
-        self.piper_arm_left.run_move_linear_known([-9, 269 + movement_y - 8, 291, -91, 90, 0, gripper_close], self.speed_slow)
-        self.piper_arm_left.run_move_linear_known([-9, 269 + movement_y - 8, 291, -91, 90, 0, 74])
-        self.piper_arm_left.run_move_linear_known([-9, 269 - movement_y - 8, 291, -91, 90, 0, 74], self.speed_slow)
+        self.piper_arm_left.run_piper_movement([92, 80, -62, 3, -13, -3, gripper_close, -9, 269 + movement_y - 7, 291 + movement_z, -91, 90, 0, gripper_close])
+        self.piper_arm_left.run_move_linear_known([-9, 269 + movement_y - 7, 291, -91, 90, 0, gripper_close], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([-9, 269 + movement_y - 7, 291, -91, 90, 0, 74])
+        self.piper_arm_left.run_move_linear_known([-9, 269 - movement_y - 7, 291, -91, 90, 0, 74], self.speed_slow)
 
         # 5 Return arm
         self.piper_arm_left.run_piper_movement([-2, 22, -34, 0, 19, -4, 74, 75, -3, 357, -114, 86, -116, 74])
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
 
     def run_test(self):
-            self.piper_arm_left.run_move_curve([
+        """
+        This function contains test curve motions.
+
+        Input : None
+        Output : None
+        """
+        self.piper_arm_left.run_move_curve([
             [60, 0, 250, 0, 85, 0, 0x01], # 출발점
             [200, 0, 400, 0, 85, 0, 0x02], # 경유점
             [60, 0, 550, 0, 85, 0, 0x03], # 도착점
             ])
-            time.sleep(15)
-            self.piper_arm_left.run_move_curve([
+        time.sleep(15)
+        self.piper_arm_left.run_move_curve([
             [60, 0, 550, 0, 85, 0, 0x01], # 출발점
             [200, 0, 400, 0, 85, 0, 0x02], # 경유점
             [60, 0, 250, 0, 85, 0, 0x03], # 도착점
             ])
-            time.sleep(15)
+        time.sleep(15)
+
+    def run_lohc_action_3(self):
+        """
+        This function contains motion for action 3 : using pippette on bowl
+        #WIP#
+
+        Input : None
+        Output : None
+        """
+        print("Action 3")
 
 if __name__ == "__main__":
     lab = LOHCActionBook()
@@ -384,6 +450,6 @@ if __name__ == "__main__":
         # lab.run_lohc_action_8_2()
         # lab.run_rail_to_left()
         # lab.run_rail_to_right()
-        # lab.run_shaking()
+        # lab.run_lohc_action_6()
         lab.run_lohc_action_4()
         # lab.run_test()
