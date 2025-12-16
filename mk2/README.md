@@ -112,12 +112,15 @@ lab.run_shaking()
 
 ### Available Actions
 
-- `run_lohc_action_1()`: Bottle grasping, pouring into container with pounding
-- `run_lohc_action_4()`: Grinding operation with mortar and pestle
-- `run_lohc_action_8_1()`: Bowl carrier grasping and pouring
-- `run_lohc_action_8_2()`: Funnel carrier shaking operation
-- `run_rail_to_left()`: Move bowl carrier from right to left rail
-- `run_shaking()`: Automated shaking procedure for mixing
+- `run_lohc_action_1()`: **Powder Pouring** - Grasps bottle, moves to bowl, and pours powder with pounding motion (repeated twice for thorough emptying)
+- `run_lohc_action_3()`: **Pipette Operation** - Uses pipette on bowl *(Work in Progress)*
+- `run_lohc_action_4()`: **Grinding Operation** - Grasps pestle (macja), performs grinding motion in bowl with multi-position circular grinding patterns
+- `run_lohc_action_6()`: **Bowl Shaking** - Grasps bowl carrier from rail, performs repeated vertical shaking motion for mixing, returns to rail
+- `run_lohc_action_8_1()`: **Bowl Carrier Pouring** - Releases rail electromagnet, grasps bowl carrier, lifts and pours into funnel (repeated twice)
+- `run_lohc_action_8_2()`: **Funnel Carrier Shaking** - Grasps funnel carrier and performs rapid vertical shaking to facilitate material flow
+- `run_rail_to_left()`: **Rail Transport Left** - Dual-arm coordination to move bowl carrier from right rail position to left rail position
+- `run_rail_to_right()`: **Rail Transport Right** - Dual-arm coordination to move bowl carrier from left rail position to right rail position
+- `run_test()`: **Curve Motion Test** - Tests curve trajectory motion between three waypoints
 
 ### Direct Arm Control
 
