@@ -26,6 +26,7 @@ class Picus2Controller:
         
             if self.serial.in_waiting > 0:
                 response = self.serial.readline().decode('utf-8').strip()
+                print(response)
         except:
             print("comm_error")
 
@@ -71,5 +72,9 @@ if __name__ == "__main__":
     Input : None
     Output : None
     """
-    p2c = Picus2Controller("/dev/ttyACM2")
+    # sudo dmesg | grep tty
+    p2c = Picus2Controller("/dev/ttyACM1")
+    
+    # sudo rfcomm bind 0 FE:BE:2D:A2:35:1F
+    # p2c = Picus2Controller("/dev/rfcomm0")
     p2c.run_scenario()

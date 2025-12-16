@@ -138,8 +138,8 @@ class PiPERControllerMK2:
         Input : list
         Output : None
         """
-            inverted = [round(p / 1000) for p in positions]
-            return inverted
+        inverted = [round(p / 1000) for p in positions]
+        return inverted
     
     def get_joint_status(self):
         """
@@ -205,9 +205,10 @@ def main():
     Output : None
     """
     piper_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
-    # piper_left = PiPERControllerMK2(C_PiperInterface("piper_right"))
+    piper_right = PiPERControllerMK2(C_PiperInterface("piper_right"))
 
-    print([*piper_left.get_joint_status(), *piper_left.get_eef_status()])
+    print("piper_left is " + str([*piper_left.get_joint_status(), *piper_left.get_eef_status()]))
+    print("piper_right is " + str([*piper_right.get_joint_status(), *piper_right.get_eef_status()]))
 
 if __name__ == "__main__":
     main()

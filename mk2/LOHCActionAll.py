@@ -13,7 +13,7 @@ class LOHCActionBook():
         Output : None
         """
         self.pa = PyArduino()
-        self.pc = Picus2Controller()
+        # self.p2c = Picus2Controller("/dev/ttyACM2")
 
         self.piper_arm_right = PiPERControllerMK2(C_PiperInterface("piper_right"))
         self.piper_arm_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
@@ -138,7 +138,7 @@ class LOHCActionBook():
         self.piper_arm_right.run_move_linear_known([156, -106, 245 - movement_z, -177, 7, 178, gripper_close],self.speed_slow)
         self.piper_arm_right.run_move_linear_known([156, -106, 245 - movement_z -5, -177, 7, 178, 73],self.speed_slow)
         self.piper_arm_right.run_move_linear_known([156, -106, 245, -177, 7, 178, 73],self.speed_slow)
-       
+
         # 5 Release bowl carrier and return home
         self.piper_arm_right.run_piper_movement([-27, 31, -58, -11, 74, 3, 0, 31, -35, 393, -169, 48, 153, 73], self.speed_default)
         self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 73], self.speed_default)
@@ -215,24 +215,24 @@ class LOHCActionBook():
 
         # 4 Return right arm 
         self.piper_arm_right.run_piper_movement([-27, 31, -58, -11, 74, 3, 0, 31, -35, 393, -169, 48, 153, 73], self.speed_default)
-        self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 73], self.speed_default)
+        self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0], self.speed_default)
 
         # 5 Initialization Position - left
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
-        self.piper_arm_left.run_piper_movement([23, 32, -46, -6, 73, 26, 0, 62, 17, 336, 167, 35, 172, 0])
-
+        self.piper_arm_left.run_piper_movement([69, 119, -99, -1, 70, 71, -1, 152, 399, 217, 176, 2, 178, -1])
+        
         # 6 Grap bowl carrier - left
-        self.piper_arm_left.run_piper_movement([77, 119, -102, -13, 65, 80, 80, 120, 426, 233, 170, 15, 179, 80])
-        self.piper_arm_left.run_piper_movement([74, 134, -113, -7, 73, 75, 63, 139, 452, 164, -179, 7, -179, 63],self.speed_slow)
-        self.piper_arm_left.run_piper_movement([74, 134, -113, -7, 73, 75, gripper_close, 139, 452, 164, -179, 7, -179, gripper_close],self.speed_slow)
+        self.piper_arm_left.run_piper_movement([68, 122, -99, 1, 68, 73, 0, 158, 404, 191, 176, 0, 175, 0])
+        self.piper_arm_left.run_move_linear_known([158, 404 - movement_y, 191, 176, 0, 175, 0], time_out = 10)
+        self.piper_arm_left.run_move_linear_known([158, 404 - movement_y - 30, 191, 176, 0, 175, 0])
+
 
         # 7 Move bowl carrier to left and release it - left
-        self.piper_arm_left.run_move_linear_known([139, 452 - movement_y + 10, 164, -179, 7, -179, gripper_close], time_out = 10)
-        self.piper_arm_left.run_move_linear_known([139, 452 - movement_y - 13, 164, -179, 7, -179, gripper_close])
-        self.piper_arm_left.run_move_linear_known([139, 452 - movement_y - 13, 164 + movement_z + 20, -179, 7, -179, 80], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([158, 404 - movement_y - 30, 191, 176, 0, 175, 0], time_out = 10)
+        self.piper_arm_left.run_move_linear_known([158, 404 - movement_y - 30, 191, 176, 0, 175, 0])
 
-        # 8 Return left arm 
-        self.piper_arm_left.run_piper_movement([23, 32, -46, -6, 73, 26, 0, 62, 17, 336, 167, 35, 172, 0])
+        # 8 Return left arm
+        self.piper_arm_left.run_piper_movement([22, 36, -32, -1, 56, 23, 0, 90, 34, 275, 166, 33, 175, 0])
         self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
     
     def run_rail_to_right(self):
@@ -243,7 +243,39 @@ class LOHCActionBook():
         Input : None
         Output : None
         """
+        movement_z = 60
+        movement_y = 345
+        gripper_close = 0
+
         print("ActionRailRight")
+
+        # 1 Initialize left arms
+        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
+        self.piper_arm_left.run_piper_movement([36, 44, -38, 0, 59, -3, 0, 98, 71, 283, -179, 30, -141, 0])
+        self.piper_arm_left.run_piper_movement([32, 72, -44, 0, 67, 31, 74, 161, 101 - 5, 237, 180, 1, -178, 74])
+
+        # 2 Move carrier to right and release it
+        self.piper_arm_left.run_move_linear_known([161, 101 - 5, 237 - movement_z, 180, 1, -178, 74])
+        self.piper_arm_left.run_move_linear_known([161, 101 - 5 , 237 - movement_z, 180, 1, -178, gripper_close], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([161, 101 + movement_y + 20, 237 - movement_z, 180, 1, -178, gripper_close], time_out = 10)
+
+        self.piper_arm_left.run_move_linear_known([161, 101 + movement_y, 237 - movement_z, 180, 1, -178, 74])
+        self.piper_arm_left.run_piper_movement([69, 111, -102, 1, 70, 69, 62, 145, 387, 289, 165, 5, 179, 62], self.speed_slow)
+
+        # 3 Return left arm
+        self.piper_arm_left.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
+
+        # 4 Initialize right arms
+        self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
+        self.piper_arm_right.run_piper_movement([-67, 118, -102, -9, 63, -64, 0, 159, -413, 242, -162, -1, 180, 0])
+        
+        # 5 Grap carrier and move it to right
+        self.piper_arm_right.run_piper_movement([-71, 126, -105, 0, 65, -71, 0, 146, -434, 207, -169, 4, 180, 0])
+        self.piper_arm_right.run_move_linear_known([146, -434 + movement_y + 50, 207, -169, 4, 180, 0], time_out = 10)
+
+        # 6 Return right arm
+        self.piper_arm_right.run_piper_movement([-13, 36, -34, -9, 55, -9, 0, 93, -34, 285, -162, 36, -176, 0])
+        self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0])
 
     def run_lohc_action_6(self):
         """
@@ -445,11 +477,12 @@ class LOHCActionBook():
 if __name__ == "__main__":
     lab = LOHCActionBook()
     for i in range(3):
-        # lab.run_lohc_action_1()
-        # lab.run_lohc_action_8_1()
-        # lab.run_lohc_action_8_2()
-        # lab.run_rail_to_left()
-        # lab.run_rail_to_right()
-        # lab.run_lohc_action_6()
-        lab.run_lohc_action_4()
+        # lab.run_lohc_action_1() #shinyoung
+        lab.run_rail_to_left() #me
+        # lab.run_lohc_action_4() #me
+        # lab.run_lohc_action_6() #me
+        # lab.run_lohc_action_3() #shinyoung
+        lab.run_rail_to_right() #me
+        # lab.run_lohc_action_8_1() #me
+        # lab.run_lohc_action_8_2() #me
         # lab.run_test()
