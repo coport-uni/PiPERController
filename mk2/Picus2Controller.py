@@ -25,10 +25,11 @@ class Picus2Controller:
             time.sleep(delay)
         
             if self.serial.in_waiting > 0:
-                response = self.serial.readline().decode('utf-8').strip()
-                print(response)
+                response = self.serial.decode('utf-8').strip()
+                # print(response)
         except:
-            print("comm_error")
+            pass
+            # print("comm_error")
 
     
     def run_scenario(self):
@@ -46,24 +47,30 @@ class Picus2Controller:
  
         self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
 
-        # 2) Start 9 dispensing mode - charge liquid
+        # 2) Start 20 dispensing mode - charge liquid
         self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
-        time.sleep(3)
-        self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        time.sleep(4)
         
         print("Prep Complete")
-        time.sleep(3)
 
         # 3) Dispense remained liquid
-        for i in range(9):
-            self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
         
         print("Dispense Complete")
 
-        # 4) Trashing remained liquid
         self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
-        for i in range(3):
-            self.run_serial_command("button", "TRIGGER_BUTTON_TOP_DOUBLE", delay=0.25)
+        self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        
+        print("Dispense Complete")
+
+        self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        self.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        
+        print("Dispense Complete")
+
+    def run_test(self):
+        self.run_serial_command("data", "GET_VERSION")
 
 if __name__ == "__main__":
     """
@@ -78,3 +85,4 @@ if __name__ == "__main__":
     # sudo rfcomm bind 0 FE:BE:2D:A2:35:1F
     # p2c = Picus2Controller("/dev/rfcomm0")
     p2c.run_scenario()
+    # p2c.run_test()

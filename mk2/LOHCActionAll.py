@@ -13,7 +13,7 @@ class LOHCActionBook():
         Output : None
         """
         self.pa = PyArduino()
-        # self.p2c = Picus2Controller("/dev/ttyACM2")
+        self.p2c = Picus2Controller("/dev/ttyACM1")
 
         self.piper_arm_right = PiPERControllerMK2(C_PiperInterface("piper_right"))
         self.piper_arm_left = PiPERControllerMK2(C_PiperInterface("piper_left"))
@@ -159,10 +159,10 @@ class LOHCActionBook():
         # 1 Initialization Position 
         self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 0, 56, 0, 213, 0, 85, 0, 0], self.speed_default)
         self.piper_arm_right.run_piper_movement([33, -2, -28, 1, 38, -1, -2, -2, 0, 310, -171, 88, -137, -2], self.speed_default)
-        self.piper_arm_right.run_piper_movement([37, 5, -11, 1, 10, 0, 72, 43, 34, 256, 52, 88, 90, 72], self.speed_slow)
+        self.piper_arm_right.run_piper_movement([37, 5, -11, 1, 10, 0, 72, 43, 34, 256, 52, 88, 90, 74], self.speed_slow)
 
         # 2 Grap funnel carrier
-        self.piper_arm_right.run_piper_movement([37, 30, -10, -4, -17, 2, 60, 89, 70, 254, -44, 89, -5, 72], self.speed_slow)
+        self.piper_arm_right.run_piper_movement([37, 30, -10, -4, -17, 2, 74, 89, 70, 254, -44, 89, -5, 74], self.speed_slow)
         self.piper_arm_right.run_piper_movement([37, 30, -10, -4, -17, 2, gripper_close, 89, 70, 254, -44, 89, -5, gripper_close], self.speed_slow)
 
         # 3 Shaking funnel carrier
@@ -182,8 +182,12 @@ class LOHCActionBook():
         # 5 funnel carrier and return home
         self.piper_arm_right.run_piper_movement([37, 5, -11, 1, 10, 0, 72, 43, 34, 256, 52, 88, 90, 72], self.speed_slow)
         self.piper_arm_right.run_piper_movement([33, -2, -28, 1, 38, -1, 72, -2, 0, 310, -171, 88, -137, 72], self.speed_default)
-        self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 76, 56, 0, 213, 0, 85, 0, 76], self.speed_default)
+        self.piper_arm_right.run_piper_movement([0, 0, 0, 0, 0, 0, 76, 56, 0, 213, 0, 85, 0, 0], self.speed_default)
 
+    def run_lohc_action_8(self):
+        self.run_lohc_action_8_1()
+        self.run_lohc_action_8_2()
+    
     def run_rail_to_left(self):
         """
         This function contains motion for action X : moving rail to left
@@ -321,10 +325,11 @@ class LOHCActionBook():
         # 4 return bowl carrier
         self.pa.run_digital_write(self.railmagnet, True)
         self.piper_arm_left.run_move_joint([32, 65, -63, 1, 70, 7, gripper_close])
-        self.piper_arm_left.run_piper_movement([32, 72, -44, 0, 67, 31, gripper_close, 161, 101, 237, 180, 1, -178, gripper_close])
+        self.piper_arm_left.run_piper_movement([32, 72, -44, 0, 67, 31, gripper_close, 161, 96, 237, 180, 1, -178, gripper_close])
         self.piper_arm_left.run_move_linear_known([161, 96, 237 - movement_z, 180, 1, -178, gripper_close], self.speed_slow)
-        self.piper_arm_left.run_move_linear_known([161, 96, 237 - movement_z, 180, 1, -178, 80], self.speed_slow)
-        self.piper_arm_left.run_move_linear_known([161, 96, 237, 180, 1, -178, 80], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([161, 96 - 10, 237 - movement_z, 180, 1, -178, gripper_close], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([161, 96 - 10, 237 - movement_z, 180, 1, -178, 80], self.speed_slow)
+        self.piper_arm_left.run_move_linear_known([161, 96 - 10, 237, 180, 1, -178, 80], self.speed_slow)
 
         # 5 Return robot arm
         self.piper_arm_left.run_piper_movement([32, 72, -44, 0, 67, 31, 74, 161, 101, 237, 180, 1, -178, 74],self.speed_slow)
@@ -342,7 +347,7 @@ class LOHCActionBook():
         movement_y = 65
         gripper_close = 0
 
-        movement_swing = 25
+        movement_swing = 20
         print("Action4")
 
         def _grinding_action():
@@ -453,6 +458,22 @@ class LOHCActionBook():
             ])
         time.sleep(15)
 
+    def run_pippet_init(self):
+        # 1) Getting in menu
+        self.p2c.run_serial_command("button", "TRIGGER_BUTTON_POWER")
+ 
+        for i in range(4):
+            self.p2c.run_serial_command("button", "DOWN")
+ 
+        self.p2c.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+
+        # 2) Start 20 dispensing mode - charge liquid
+        self.p2c.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        time.sleep(4)
+        
+        self.p2c.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        print("Prep Complete")
+
     def run_lohc_action_3(self):
         """
         This function contains motion for action 3 : using pippette on bowl
@@ -463,14 +484,130 @@ class LOHCActionBook():
         """
         print("Action 3")
 
+        gripper_close = 0
+        movement_y = 70
+        movement_z = 170
+        distance = 15
+        wait = 3
+        speed_slow = 15
+        speed_default = 70
+        speed_fast = 90
+
+        
+
+        # 1. Set Pose
+
+        self.piper_arm_left.run_move_joint([0, 0, 0, 0, 0, 0, 0])
+        self.piper_arm_left.run_piper_movement([0, 20, -32, -1, 19, -3, 0, 74, 1, 347, -108, 86, -107, 74], speed_default)
+
+        self.piper_arm_left.run_move_joint([90, 20, -32, -1, 19, -3, 0, 74])
+        self.piper_arm_left.run_move_joint([140, 20, -32, -1, 19, -3, 0, 74])
+        self.piper_arm_left.run_move_joint([140, 20, -32, 93, 19, -3, 0, 74])
+        self.piper_arm_left.run_move_joint([140, 20, -32, 93, 19, -3, 0, 74])
+        self.piper_arm_left.run_piper_movement([133, 96, -39, 50, -66, -25, 71, -158, 266, 221, 53, 86, 140, 74], speed_default)
+
+        # 2. Approach target
+
+        self.piper_arm_left.run_piper_movement([133, 96, -39, 50, -66, -25, 71, -158, 266, 221, 53, 86, 140, 74], speed_slow)
+        self.piper_arm_left.run_move_linear_known([-158, 269 + movement_y, 221, -91, 90, 0, 74], speed_default)
+        self.piper_arm_left.run_move_linear_known([-158, 269 + movement_y, 221, -91, 90, 0, 74])
+
+         # 3. Escpae
+        
+        self.piper_arm_left.run_move_linear_known([-158, 333, 221 + movement_z, -91, 90, 0, gripper_close], speed_default)
+        self.piper_arm_left.run_move_linear_known([-158, 333, 221 + movement_z, -91, 90, 0, gripper_close])
+
+        self.piper_arm_left.run_move_linear_known([-158, 333 - movement_y, 395, -91, 90, 0, gripper_close], speed_default)
+        self.piper_arm_left.run_move_linear_known([-158, 333 - movement_y, 395, -91, 90, 0, gripper_close])
+        self.piper_arm_left.run_move_linear_known([-158, 150, 395, -91, 90, 0, gripper_close], speed_default)
+        self.piper_arm_left.run_move_linear_known([81, 110, 395, 65, 89, 119, gripper_close], speed_default)
+
+        # # 4. Pippeting 
+        self.piper_arm_left.run_piper_movement([18, 42, -43, 1, 0, 1, gripper_close, 147, 47, 399, 19, 83, 37, gripper_close], speed_default)
+
+        self.piper_arm_left.run_piper_movement([19, 42, -24, -2, -11, 4, gripper_close, 148, 53, 303, 138, 87, 158, gripper_close]) # 5
+        self.p2c.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        time.sleep(wait)
+
+        self.piper_arm_left.run_move_linear_known([148 + distance, 53 + distance, 303, 138, 87, 158, gripper_close], speed_slow) # 1
+        self.p2c.run_serial_command("button", "TRIGGER_BUTTON_TOP")
+        time.sleep(wait)
+
+        # self.piper_arm_left.run_move_linear_known([148, 53 + distance, 303, 138, 87, 158, gripper_close], self.speed_slow) # 2
+        # time.sleep(wait) 
+        # self.piper_arm_left.run_move_linear_known([148 - distance, 53 + distance, 303, 138, 87, 158, gripper_close], self.speed_slow) # 3
+        # time.sleep(wait)
+        # self.piper_arm_left.run_move_linear_known([148 - distance, 53, 303, 138, 87, 158, gripper_close], self.speed_slow) # 6
+        # time.sleep(wait)
+        # self.piper_arm_left.run_move_linear_known([148 - distance, 53 - distance, 303, 138, 87, 158, gripper_close], self.speed_slow) # 9 
+        # time.sleep(wait)
+        # self.piper_arm_left.run_move_linear_known([148, 53 - distance, 303, 138, 87, 158, gripper_close], self.speed_slow) # 8
+        # time.sleep(wait)
+        # self.piper_arm_left.run_move_linear_known([148 + distance, 53 - distance, 303, 138, 87, 158, gripper_close], self.speed_slow) # 7
+        # time.sleep(wait)
+        # self.piper_arm_left.run_move_linear_known([148 + distance, 53, 303, 138, 87, 158, gripper_close], self.speed_slow) # 4
+        # time.sleep(wait)
+        self.piper_arm_left.run_move_linear_known([148, 53, 303, 138, 87, 158, gripper_close], speed_slow) # 5
+        time.sleep(wait)
+
+        # # inverse replay
+        self.piper_arm_left.run_piper_movement([18, 42, -43, 1, 0, 1, gripper_close, 147, 47, 399, 19, 83, 37, gripper_close], speed_fast)
+
+        # self.piper_arm_left.run_move_linear_known([81, 110, 395, 65, 89, 119, gripper_close], self.speed_fast)
+        self.piper_arm_left.run_piper_movement([107, 39, -44, 100, -46, -104, gripper_close, 28, 125, 396, -62, 90, 0, gripper_close])
+        self.piper_arm_left.run_piper_movement([150, 68, -57, 86, -59, -83, gripper_close, -158, 181, 395, -91, 90, 0, gripper_close])
+        self.piper_arm_left.run_move_linear_known([-158, 181 + movement_y, 395, -91, 90, 0, gripper_close], self.speed_default)
+        self.piper_arm_left.run_move_linear_known([-158, 181 + movement_y, 395, -91, 90, 0, gripper_close])
+        self.piper_arm_left.run_move_linear_known([-158, 337, 395, -91, 90, 0, gripper_close]) #y=335
+
+        self.piper_arm_left.run_move_linear_known([-158, 330, 395 - movement_z, -91, 90, 0, gripper_close], speed_default)
+        self.piper_arm_left.run_move_linear_known([-158, 330, 395 - movement_z, -91, 90, 0, gripper_close])
+        self.piper_arm_left.run_move_linear_known([-158, 330, 221, -91, 90, 0, 74]) #330
+
+        
+        self.piper_arm_left.run_move_linear_known([-158, 332 - movement_y, 221, -91, 90, 0, 74], speed_slow)
+        self.piper_arm_left.run_move_linear_known([-158, 332 - movement_y, 221, -91, 90, 0, 74])
+        self.piper_arm_left.run_move_linear_known([-158, 256, 221, -91, 90, 0, 74], speed_slow)
+        self.piper_arm_left.run_piper_movement([133, 96, -39, 50, -66, -25, 71, -158, 266, 221, 53, 86, 140, 74], speed_slow)
+
+        self.piper_arm_left.run_piper_movement([133, 96, -39, 50, -66, -25, 71, -158, 266, 221, 53, 86, 140, 74], speed_default)
+        self.piper_arm_left.run_move_joint([140, 20, -32, 93, 19, -3, 0, 74], speed_default)
+        self.piper_arm_left.run_move_joint([140, 20, -32, 93, 19, -3, 0, 74])
+        self.piper_arm_left.run_move_joint([140, 20, -32, -1, 19, -3, 0, 74])
+        self.piper_arm_left.run_move_joint([90, 20, -32, -1, 19, -3, 0, 74])
+        
+        self.piper_arm_left.run_piper_movement([0, 20, -32, -1, 19, -3, 0, 74, 1, 347, -108, 86, -107, 74], speed_default)
+        self.piper_arm_left.run_move_joint([0, 0, 0, 0, 0, 0, 0])
+
+    def run_scenario(self):
+        cycle_pippet = 10
+        cycle_grinding = 5
+
+        self.run_lohc_action_1()
+        self.run_rail_to_left()
+        self.run_pippet_init()
+        for i in range(cycle_pippet):
+            self.run_lohc_action_3
+            print("cycle_pippet :"  + str(i))
+
+            for j in range(cycle_grinding):
+                self.run_lohc_action_4()
+                self.run_lohc_action_6()
+                print("cycle_grinding :"  + str(j))
+
+        self.run_rail_to_left
+        self.run_lohc_action_8()
+
 if __name__ == "__main__":
     lab = LOHCActionBook()
-    for i in range(3):
-        lab.run_lohc_action_1() #shinyoung
-        lab.run_rail_to_left() #me - 7
-        lab.run_lohc_action_4() #me
-        # lab.run_lohc_action_6() #me
+    # lab.run_pippet_init()
+    for i in range(1):
+        # lab.run_lohc_action_1() #shinyoung
+        # lab.run_rail_to_left() #me
         # lab.run_lohc_action_3() #shinyoung
-        lab.run_rail_to_right() #me - 7
-        # lab.run_lohc_action_8_2() #me
+        # lab.run_lohc_acti
+        # on_4() #me
+        # lab.run_lohc_action_6() #me
+        # lab.run_rail_to_right() #me
+        lab.run_lohc_action_8() #me
         # lab.run_test()
