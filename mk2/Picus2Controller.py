@@ -26,10 +26,10 @@ class Picus2Controller:
         
             if self.serial.in_waiting > 0:
                 response = self.serial.decode('utf-8').strip()
-                # print(response)
+                print(response)
         except:
             pass
-            # print("comm_error")
+            print("comm_error")
 
     
     def run_scenario(self):
